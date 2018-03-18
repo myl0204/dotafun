@@ -9,11 +9,15 @@ export default new Vuex.Store({
     playerId: 0,
     playerProfile: {},
     playerMatches: [],
-    playerHeroes: []
+    playerHeroes: [],
+    currentHeroCount: 0, // 记录当前查询过的英雄数量
+    currentMatchCount: 8
   },
   getters: {
-    top8PlayedHeroes(state) {
-      return state.playerHeroes.slice(0, 8)
+    topPlayedHeroes(state) {
+      return count => {
+        return state.playerHeroes.slice(0, count)
+      }
     },
     top8HeroesKDA(state, getters) {
       // ..
@@ -37,26 +41,45 @@ export default new Vuex.Store({
       const currentHeroesData = state.playerHeroes[index]
       currentHeroesData.KDA = KDA
       state.playerHeroes.splice(index, 1, currentHeroesData)
+    },
+    updateCurrentHeroCount(state) {
+      state.currentHeroCount++
+    },
+    updateCurrentMatchCount(state, count) {
+      state.currentMatchCount += count
     }
   },
   actions: {
     getHeroesKDA({state, commit}, heroCount) {
-      // getters.top8PlayedHeroes.forEach((heroData) => {
-      if (heroCount > state.playerHeroes.length) return
-      for (let index = 0; index < heroCount; index++) {
-        /* eslint-disable camelcase */
-        const { hero_id, KDA } = state.playerHeroes[index]
-        const params = { hero_id }
-        if (!KDA) {
-          axios.get(`https://api.opendota.com/api/players/${state.playerId}/totals`, { params })
-            .then((res) => {
-              const { data } = res
-              // 小数点后保留precision位
-              const KDA = precisionRound(((data[0].sum + data[2].sum) / data[1].sum), 2)
-              commit('addKDAToPlayerHeroes', {index, KDA})
-            })
+      return new Promise((resolve, reject) => {
+        if (heroCount > state.playerHeroes.length) return
+        const currentHeroCount = state.currentHeroCount
+        const totalHeroNumber = state.playerHeroes.length
+        // 防止查询数量超过英雄数量
+        if (currentHeroCount + heroCount > totalHeroNumber) {
+          heroCount = totalHeroNumber - currentHeroCount
         }
-      }
+        for (let index = currentHeroCount; index < heroCount + currentHeroCount; index++) {
+          /* eslint-disable camelcase */
+          const { hero_id, KDA } = state.playerHeroes[index]
+          const params = { hero_id }
+          if (!KDA) {
+            axios.get(`https://api.opendota.com/api/players/${state.playerId}/totals`, { params })
+              .then((res) => {
+                const { data } = res
+                // 计算KDA，考虑D===0的情况，结果小数点后保留precision位
+                const [totalKill, totalDeath, totalAssists] = [data[0].sum, data[1].sum, data[2].sum]
+                const KDA = precisionRound(((totalKill + totalAssists) / (totalDeath === 0 ? 1 : totalDeath)), 2)
+                commit('addKDAToPlayerHeroes', {index, KDA})
+                commit('updateCurrentHeroCount')
+                resolve()
+              })
+          }
+        }
+      })
+    },
+    getMatchDetails() {
+
     }
   }
 })
