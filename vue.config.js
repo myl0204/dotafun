@@ -41,7 +41,7 @@ module.exports = {
       .set('@@', resolve('src/components'))
     if (process.env.NODE_ENV === 'production') {
       config.output
-        .publicPath('/dotafun')
+        .publicPath('/dotafun/')
     }
   }
 }
