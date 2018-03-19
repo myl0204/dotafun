@@ -5,14 +5,16 @@ install:
   - "yarn install"
 script:
   - "yarn run build"
-cache: yarn
+cache:
+  directories:
+    - "node_modules"
+  yarn: true
 deploy:
   provider: pages
   skip-cleanup: true
   github-token: GITHUB_TOKEN_1  # Set in travis-ci.org dashboard, marked secure
   keep-history: false
   target-branch: gh-pages
+  committer-from-gh: true
   on:
-    branches:
-      only:
-        - master
+    branch: master
