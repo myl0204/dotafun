@@ -13,13 +13,18 @@ after_success: |
   if [ -n "$GITHUB_TOKEN" ]; then
     cd "$TRAVIS_BUILD_DIR"
     # This generates a `web` directory containing the website.
-    git checkout -b gh-pages
-    git add .
-    git -c user.name='travis' -c user.email='travis' commit -m init
-    # Make sure to make the output quiet, or else the API token will leak!
-    # This works because the API key can replace your password.
+    git init
+    git config user.name "myl cl"
+    git config user.email "yunliangmiao@gmail.com"
+
     git remote add upstream "https://$GITHUB_TOKEN@github.com/myl0204/dotafun.git"
-    git push -q -f upstream HEAD:gh-pages
-    cd "$TRAVIS_BUILD_DIR"
+    git fetch upstream
+    git reset upstream/gh-pages
+
+    touch .
+
+    git add -A .
+    git commit -m "rebuild pages"
+    git push -q upstream HEAD:gh-pages
   fi
 
