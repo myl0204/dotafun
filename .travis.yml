@@ -13,6 +13,7 @@ after_success: |
   if [ -n "$GITHUB_TOKEN" ]; then
     cd "$TRAVIS_BUILD_DIR"
     # This generates a `web` directory containing the website.
+    cd dist
     git init
     git config user.name "myl cl"
     git config user.email "yunliangmiao@gmail.com"
