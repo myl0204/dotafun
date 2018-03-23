@@ -4,6 +4,7 @@ import Introduction from './components/Introduction'
 import OverView from './components/OverView'
 import Heroes from './components/Heroes'
 import Matches from './components/Matches'
+import Trend from './components/Trend'
 Vue.use(Router)
 
 export default new Router({
@@ -19,14 +20,19 @@ export default new Router({
       component: OverView
     },
     {
-      path: '/mostHeroes',
+      path: '/heroes',
       name: 'heroes',
       component: Heroes
     },
     {
-      path: '/recentMatches',
+      path: '/matches',
       name: 'matches',
       component: Matches
+    },
+    {
+      path: '/trend',
+      name: 'trend',
+      component: Trend
     }
   ]
 })

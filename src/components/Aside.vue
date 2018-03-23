@@ -9,7 +9,7 @@
         <el-menu-item index="2-1" :route="{name: 'overview'}">概览</el-menu-item>
         <el-menu-item index="2-2" :route="{name: 'heroes'}">常用英雄</el-menu-item>
         <el-menu-item index="2-3" :route="{name: 'matches'}">最近比赛</el-menu-item>
-        <el-menu-item index="2-4" :route="{name: 'qushitu'}">趋势图</el-menu-item>
+        <el-menu-item index="2-4" :route="{name: 'trend'}">趋势图</el-menu-item>
       </el-submenu>
       <!-- </router-link> -->
       <el-submenu index="3" >

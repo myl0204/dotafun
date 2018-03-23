@@ -3,7 +3,7 @@
     <span>最近比赛</span>
     <el-table
       :data="matchData"
-      stripe>
+      :cell-class-name="setClass">
       <el-table-column
         label="英雄">
         <template slot-scope="scope">
@@ -44,12 +44,22 @@ import heroNameMap from '@/common/mixins/heroNameMap.js'
 import { precisionRound } from '@/common/util.js'
 export default {
   mixins: [heroNameMap],
-  mounted() {
-    this._initMatchData()
-  },
+  // created() {
+  //   // console.log(this.$store.state.playerMatches)
+  //   this._initMatchData()
+  // },
+  // // updated() {
+  // //   console.log('up')
+  // //   this._initMatchData()
+  // // },
+  // beforeRouteEnter(to, from, next) {
+  //   console.log('enter')
+  //   next(vm => {
+  //     console.log(vm.$store.state.playerMatches)
+  //   })
+  // },
   data() {
     return {
-      matchData: [],
       timeStamp: 0,
       map: ['', 'Normal', 'High', 'Very High'],
       heroImgUrl: 'https://cdn.dota2.com/apps/dota2/images/heroes/',
@@ -59,11 +69,9 @@ export default {
   computed: {
     currentMatchCount() {
       return this.$store.state.currentMatchCount
-    }
-  },
-  methods: {
-    _initMatchData() {
-      this.matchData = this.$store.state.playerMatches.slice(0, this.currentMatchCount).map(data => {
+    },
+    matchData() {
+      return this.$store.state.playerMatches.slice(0, this.currentMatchCount).map(data => {
         let index = data.hero_id - 1
         if (data.hero_id >= 25) { // hero_id没有24
           index--
@@ -97,7 +105,9 @@ export default {
           level
         }
       })
-    },
+    }
+  },
+  methods: {
     getTime(endTime) { // 获取结束时间。相对现在来说。
       this.timeStamp = Date.now()
       let diff = (this.timeStamp - endTime) / 60000 // 分钟数
@@ -119,14 +129,29 @@ export default {
       }
     },
     updateTime() {
-      this.matchData.map(matchData => {
+      this.matchData.forEach(matchData => {
         matchData.end_time = this.getTime(matchData._end_time)
       })
+    },
+    setClass(obj) {
+      if (obj.columnIndex === 3) {
+        const className = obj.row.result === '胜利' ? 'result-win' : 'result-lose'
+        return className
+      }
     }
   }
 }
 </script>
 
 <style lang="scss">
-
+.el-table {
+  .el-table__row {
+    .result-win {
+      color: #499249
+    }
+    .result-lose {
+      color: #c23c2a
+    }
+  }
+}
 </style>

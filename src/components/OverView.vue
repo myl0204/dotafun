@@ -1,19 +1,31 @@
 <template>
   <div class="overview" v-loading="isLoading">
-    <div class="player">
+    <div class="player-basic">
       <div class="player-info">
         <img class="player-avatar" :src="playerProfile.avatarmedium" alt="">
         <span class="player-name">{{ playerProfile.personaname}}</span>
       </div>
       <div class="player-rank">
-        <img :src="rankTierUrl" alt="rankTier">
+        <img :src="rankTierUrl" alt="rankTier" class="pic">
         <!-- <div class="pic" :class="'rank' + rank"></div> -->
+      </div>
+    </div>
+    <div class="player-detail">
+      <ul>历史数据
+        <li>场次:{{totalGame}}</li>
+        <li>kda:{{kda}}</li>
+        <li>gpm:{{gpm}}</li>
+        <li>xpm:{{xpm}}</li>
+      </ul>
+      <div class="win_rate">
+        <span>胜率:{{winRate}}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { precisionRound } from '@/common/util.js'
 export default {
   data() {
     return {
@@ -53,6 +65,24 @@ export default {
     },
     rankTierUrl() {
       return require('../assets/rank_tiers/SeasonalRank' + this.rank + '.png')
+    },
+    totalGame() {
+      const {win, lose} = this.playerProfile
+      return win + lose
+    },
+    winRate() {
+      const {win, lose} = this.playerProfile
+      return precisionRound(win / (win + lose), 4) * 100 + '%'
+    },
+    kda() {
+      const {kills, deaths, assists} = this.playerProfile
+      return precisionRound((kills + assists) / (deaths === 0 ? 1 : deaths), 2)
+    },
+    gpm() {
+      return parseInt(this.playerProfile.gold_per_min / this.totalGame)
+    },
+    xpm() {
+      return parseInt(this.playerProfile.xp_per_min / this.totalGame)
     }
   },
   methods: {
@@ -64,11 +94,14 @@ export default {
 @import '../common/scss/mixin';
 @import '../common/scss/variables';
 .overview {
-  .player {
+  .player-basic {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    margin-bottom: 30px;
     .player-info {
+      width: 80px;
+      text-align: center;
       .player-avatar {
         border: 2px solid $--color-primary
       }
@@ -77,25 +110,27 @@ export default {
       }
     }
     .player-rank {
-      transform: scale(.5);
       font-size: 0;
       .pic {
         display: block;
-        width: 256px;
-        height: 256px;
-        // @for $i from 1 through 7 {
-        //   @for $j from 0 through 5 {
-        //     &.rank#{$i}-#{$j} {
-        //       background-image: url('../assets/rank_tiers/SeasonalRank#{$i}-#{$j}.png')
-        //     }
-        //   }
-        // }
-        // background-image: url('../assets/rank_tiers/SeasonalRankTop1.png')
+        width: 128px;
       }
     }
   }
-  span {
-    text-align: center;
+  .player-detail {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    ul {
+      width: 80px;
+      margin: 0;
+      -webkit-padding-start: 0;
+      list-style: none;
+    }
+    .win_rate {
+      width: 128px;
+      text-align: center;
+    }
   }
 }
 </style>

@@ -29,7 +29,7 @@
     type="primary"
     icon="el-icon-more"
     :loading="isLoading"
-    @click="getMoreHeroes"></el-button>
+    @click="getMoreHeroes(2,$event)"></el-button>
   </div>
 </template>
 
@@ -76,8 +76,9 @@ export default {
     }
   },
   methods: {
-    getMoreHeroes(ev, count = 15) {
-      this.$store.dispatch('getHeroesKDA', count)
+    getMoreHeroes(ev, count) {
+      console.log(ev, count)
+      // this.$store.dispatch('getHeroesKDA', count)
     }
   }
 }
